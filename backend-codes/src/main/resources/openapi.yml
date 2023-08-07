@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Backend Ideas API
+  description: A sample API for backend ideas microservice
+
+tags:
+  - name: codes
+
+paths:
+  /codes/v1/:
+    post:
+      tags:
+        - codes
+      description: Returns a list of ideas
+      operationId: getCodes
+      requestBody:
+        description: Create code request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetInactiveCodeRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInactiveCodeResponse'
+
+################################################################################
+#                                 Components                                   #
+################################################################################
+components:
+  parameters:
+    id:
+      name: id
+      in: path
+      description: id value of the object
+      required: true
+      schema:
+        type: string
+  schemas:
+    GetInactiveCodeRequest:
+      type: object
+      required:
+        - requestedCode
+        - organisationId
+      properties:
+        requestedCode:
+          type: integer
+          minimum: 1
+          description: "Number of requested codes to be fetched"
+        organisationId:
+          type: string
+          description: "Organisation identifier"
+
+    GetInactiveCodeResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Code'
+
+
+    Code:
+      x-class-extra-annotation: "@org.springframework.data.mongodb.core.mapping.Document"
+      properties:
+        id:
+          type: string
+          x-field-extra-annotation: "@org.springframework.data.annotation.Id"
+          example: 9973bed8-91c9-4ea7-ba55-629f386144d5
+          description: "Code identifier"
+        organisation_id:
+          type: string
+          description: "Organisation identifier"
+        code_status:
+          $ref: '#/components/schemas/CodeStatusEnum'
+        created:
+          type: string
+          description: "Code generation timestamp"
+
+
+    CodeStatusEnum:
+      type: string
+      description: "Code status"
+      enum:
+        - ACTIVE
+        - INACTIVE
