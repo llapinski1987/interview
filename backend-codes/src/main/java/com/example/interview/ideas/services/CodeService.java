@@ -45,7 +45,8 @@ public class CodeService implements CodeServiceInterface {
     @Transactional
     @Override
     public void generateCodes(int maxNumberOfCodes, String organisationId, CodeStatusEnum codeStatusEnum) {
-        generateMissingCodes(maxNumberOfCodes - codeRepository.countAllByCodeStatusAndOrganisationId(codeStatusEnum, organisationId), organisationId, codeStatusEnum);
+        generateMissingCodes(maxNumberOfCodes - codeRepository.countAllByCodeStatusAndOrganisationId(codeStatusEnum, organisationId),
+                organisationId, codeStatusEnum);
     }
 
     private void generateMissingCodes(int numberOfCodes, String organisationId, CodeStatusEnum codeStatusEnum) {
@@ -61,16 +62,11 @@ public class CodeService implements CodeServiceInterface {
     }
 
     private Code generateCode(String organisationId, CodeStatusEnum codeStatusEnum, String timestamp) {
-        Code.CodeBuilder codeBuilder = Code.builder();
-        codeBuilder.organisationId(organisationId);
-        codeBuilder.id(UUID.randomUUID().toString());
-        codeBuilder.created(timestamp);
-
-        switch (codeStatusEnum) {
-            case ACTIVE -> codeBuilder.codeStatus(CodeStatusEnum.ACTIVE);
-            default -> codeBuilder.codeStatus(CodeStatusEnum.INACTIVE);
-        }
-
-        return codeBuilder.build();
+        return Code.builder()
+                .organisationId(organisationId)
+                .id(UUID.randomUUID().toString())
+                .created(timestamp)
+                .codeStatus(codeStatusEnum)
+                .build();
     }
 }
